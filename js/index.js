@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 var app = {
     
     // Application Constructor
@@ -27,7 +28,6 @@ var app = {
     // Bind any events that are required on startup. Common events are:
     // 'load', 'deviceready', 'offline', and 'online'.
     bindEvents: function() {
-        console.log("binding events");
         document.addEventListener('deviceready', this.onDeviceReady, false);
     },
     // deviceready Event Handler
@@ -35,7 +35,6 @@ var app = {
     // The scope of 'this' is the event. In order to call the 'receivedEvent'
     // function, we must explicity call 'app.receivedEvent(...);'
     onDeviceReady: function() {
-        console.log("the device is ready");
         app.receivedEvent('deviceready');
     },
     // Update DOM on a Received Event
@@ -48,10 +47,6 @@ var app = {
         listeningElement.setAttribute('style', 'display:none;');
         receivedElement.setAttribute('style', 'display:block;');
 
-
-        console.log("Cordova has connected. Let the good times roll.");
-            
-        // START capture elements
         var captureElements = document.body.querySelectorAll('.capture');
         for( var i = 0; i < captureElements.length; i++) {
             captureElements[i].setAttribute('style', 'display:block;');
@@ -62,7 +57,9 @@ var app = {
             app.getImage();
         };
 
-        getImage: function() {
+    },
+
+    getImage: function() {
         navigator.camera.getPicture(
             app.onImageSuccess,
             app.onImageFail,
@@ -76,19 +73,36 @@ var app = {
         );
     },
 
-        onImageSuccess: function(imageURI) {
+    toggleMap: function(element) {
+        if (element.className == 'mapit') {
+
+            element.className = '';
+            element.src = element.dataset.originalsrc;
+
+        } else {
+
+        element.className += "mapit";
+        element.dataset.originalsrc = element.src;
+        element.src = element.dataset.mapURL;
+
+        }
+    },
+
+    onImageSuccess: function(imageURI) {
+
+
         var img = document.createElement('img');
         img.src = imageURI;
         img.dataset.originalsrc = imageURI;
 
+
         // Grab the coords
-            navigator.geolocation.getCurrentPosition(
+        navigator.geolocation.getCurrentPosition(
             function(position) {
                 img.dataset.latitude    = position.coords.latitude;
                 img.dataset.longitude   = position.coords.longitude;
-                /*img.dataset.mapURL      = 'http://maps.googleapis.com/maps/api/staticmap?center=' + img.dataset.latitude + ',' + img.dataset.longitude + '&zoom=13&size=600x300&maptype=roadmap&sensor=true&markers=%7c' + img.dataset.latitude + ',' + img.dataset.longitude;*/
+                img.dataset.mapURL      = 'http://maps.googleapis.com/maps/api/staticmap?center=' + img.dataset.latitude + ',' + img.dataset.longitude + '&zoom=13&size=600x300&maptype=roadmap&sensor=true&markers=%7c' + img.dataset.latitude + ',' + img.dataset.longitude;
 
-                // add mapping request here
                 img.onclick = function() {
                     app.toggleMap(this);
                 };
@@ -96,12 +110,20 @@ var app = {
             }
             , app.onGeoError);
 
-        // Perform geolocation lookup here
+
         var polaroids = document.getElementById('polaroid-images');
+
+
+
         polaroids.appendChild(img);
 
     },
 
-        // END capture elements
+    onImageFail: function(message) {
+        alert('Failed because: ' + message);
+    },
+
+    onGeoError: function(error) {
+        alert(error.code + ": " + error.message);
     }
 };
