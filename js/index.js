@@ -48,11 +48,59 @@ var app = {
         listeningElement.setAttribute('style', 'display:none;');
         receivedElement.setAttribute('style', 'display:block;');
 
+
         console.log("Cordova has connected. Let the good times roll.");
             
         // START capture elements
+        var captureElements = document.body.querySelectorAll('.capture');
+        for( var i = 0; i < captureElements.length; i++) {
+            captureElements[i].setAttribute('style', 'display:block;');
+        }
 
+        var capButton = document.getElementById("capButton");
+        capButton.onclick = function() {
+            app.getImage();
+        };
 
+        getImage: function() {
+        navigator.camera.getPicture(
+            app.onImageSuccess,
+            app.onImageFail,
+            {
+                quality: 100,
+                destinationType: Camera.DestinationType.FILE_URI,
+                targetWidth: 150,
+                targetHeight: 150,
+                saveToPhotoAlbum: false
+            }
+        );
+    },
+
+        onImageSuccess: function(imageURI) {
+        var img = document.createElement('img');
+        img.src = imageURI;
+        img.dataset.originalsrc = imageURI;
+
+        // Grab the coords
+            navigator.geolocation.getCurrentPosition(
+            function(position) {
+                img.dataset.latitude    = position.coords.latitude;
+                img.dataset.longitude   = position.coords.longitude;
+                /*img.dataset.mapURL      = 'http://maps.googleapis.com/maps/api/staticmap?center=' + img.dataset.latitude + ',' + img.dataset.longitude + '&zoom=13&size=600x300&maptype=roadmap&sensor=true&markers=%7c' + img.dataset.latitude + ',' + img.dataset.longitude;*/
+
+                // add mapping request here
+                img.onclick = function() {
+                    app.toggleMap(this);
+                };
+
+            }
+            , app.onGeoError);
+
+        // Perform geolocation lookup here
+        var polaroids = document.getElementById('polaroid-images');
+        polaroids.appendChild(img);
+
+    },
 
         // END capture elements
     }
