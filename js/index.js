@@ -101,7 +101,7 @@ var app = {
             function(position) {
                 img.dataset.latitude    = position.coords.latitude;
                 img.dataset.longitude   = position.coords.longitude;
-                img.dataset.mapURL      = 'http://maps.googleapis.com/maps/api/staticmap?center=' + img.dataset.latitude + ',' + img.dataset.longitude + '&zoom=13&size=600x300&maptype=roadmap&sensor=true&markers=%7c' + img.dataset.latitude + ',' + img.dataset.longitude;
+                img.dataset.mapURL      = 'http://maps.googleapis.com/maps/api/staticmap?center=' + img.dataset.latitude + ',' + img.dataset.longitude + '&zoom=13&size=900x450&maptype=roadmap&sensor=true&markers=%7c' + img.dataset.latitude + ',' + img.dataset.longitude;
 
                 img.onclick = function() {
                     app.toggleMap(this);
